@@ -2,11 +2,15 @@ package br.com.alura.conversormoedas.clis;
 
 import br.com.alura.conversormoedas.dtos.ConversionResultDto;
 import br.com.alura.conversormoedas.enums.Currency;
+import br.com.alura.conversormoedas.models.Conversion;
 
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Scanner;
 
 public class ExchangeRateCli {
     private static final Scanner sc = new Scanner(System.in);
+
 
     public static void showMenu() {
         System.out.println("*************************************************");
@@ -18,7 +22,8 @@ public class ExchangeRateCli {
         System.out.println("5) Dólar => Peso Colombiano");
         System.out.println("6) Peso Colombiano => Dólar");
         System.out.println("7) Customizar seleção");
-        System.out.println("8) Sair");
+        System.out.println("8) Histórico");
+        System.out.println("9) Sair");
     }
 
     public static int getUserMenuInput(int min, int max) {
@@ -40,7 +45,7 @@ public class ExchangeRateCli {
     }
 
     public static int getUserMenuInput() {
-        return getUserMenuInput(1, 8);
+        return getUserMenuInput(1, 9);
     }
 
     public static double getUserValueInput() {
@@ -58,7 +63,7 @@ public class ExchangeRateCli {
     }
 
     public static Currency getUserBaseCurrencyInput() {
-       return getUserCurrencyInput("\nDigite o código da moeda de origem:");
+        return getUserCurrencyInput("\nDigite o código da moeda de origem:");
     }
 
     public static Currency getUserTargetCurrencyInput() {
@@ -84,6 +89,20 @@ public class ExchangeRateCli {
         System.out.printf("Valor original: %.2f %s\n", initialValue, result.baseCode());
         System.out.printf("Valor convertido: %.2f %s\n", result.conversionResult(), result.targetCode());
         System.out.println("*************************************************\n");
+    }
 
+    public static void showHistory(List<Conversion> history) {
+        System.out.println("\n*************************************************");
+        System.out.println("Histórico de conversões");
+        System.out.println("*************************************************\n");
+
+        if (history.isEmpty())
+            System.out.println("Histórico vazio ---------------------------------");
+
+        for (Conversion c : history) {
+            System.out.println("Data/Horário: " + c.getTime().format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm:ss")));
+            System.out.println("Valor base: " + c.getBaseValue() + " " + c.getBaseCurrency());
+            System.out.println("Valor convertido: " + c.getTargetValue() + " " + c.getTargetCurrency() + "\n");
+        }
     }
 }
