@@ -4,6 +4,7 @@ import br.com.alura.conversormoedas.clis.ExchangeRateCli;
 import br.com.alura.conversormoedas.dtos.ConversionResultDto;
 import br.com.alura.conversormoedas.enums.Currency;
 import br.com.alura.conversormoedas.loggers.ExchangeRateLogger;
+import br.com.alura.conversormoedas.services.AppUserHistoryService;
 import br.com.alura.conversormoedas.services.ExchangeRateService;
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -13,13 +14,14 @@ public class Main {
         double value = 0;
         Currency baseCurrency, targetCurrency;
         ConversionResultDto result;
+        AppUserHistoryService historyService = new AppUserHistoryService();
 
         Dotenv dotenv = Dotenv.load();
         String apiKey = dotenv.get("EXCHANGE_RATE_API_KEY");
 
         ExchangeRateService exchangeRateService = new ExchangeRateService(apiKey);
 
-        while (option != 8) {
+        while (option != 9) {
             ExchangeRateCli.showMenu();
             option = ExchangeRateCli.getUserMenuInput();
 
@@ -30,7 +32,7 @@ public class Main {
                 ExchangeRateLogger.logUserValueInput("" + value);
             }
 
-            switch(option) {
+            switch (option) {
                 case 1:
                     baseCurrency = Currency.USD;
                     targetCurrency = Currency.ARS;
@@ -65,6 +67,9 @@ public class Main {
                     value = ExchangeRateCli.getUserValueInput();
                     ExchangeRateLogger.logUserValueInput("" + value);
                     break;
+                case 8:
+                    ExchangeRateCli.showHistory(historyService.getHistory());
+                    continue;
                 default:
                     continue;
             }
@@ -72,6 +77,7 @@ public class Main {
             System.out.println("\nConvertendo...");
             result = exchangeRateService.convertValue(baseCurrency, targetCurrency, value);
             ExchangeRateLogger.logSuccessfulConversion(result);
+            historyService.addToHistory(value, result);
             ExchangeRateCli.showConversionResult(value, result);
         }
     }
