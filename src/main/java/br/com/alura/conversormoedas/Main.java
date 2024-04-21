@@ -3,6 +3,7 @@ package br.com.alura.conversormoedas;
 import br.com.alura.conversormoedas.clis.ExchangeRateCli;
 import br.com.alura.conversormoedas.dtos.ConversionResultDto;
 import br.com.alura.conversormoedas.enums.Currency;
+import br.com.alura.conversormoedas.loggers.ExchangeRateLogger;
 import br.com.alura.conversormoedas.services.ExchangeRateService;
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -13,7 +14,6 @@ public class Main {
         Currency baseCurrency, targetCurrency;
         ConversionResultDto result;
 
-
         Dotenv dotenv = Dotenv.load();
         String apiKey = dotenv.get("EXCHANGE_RATE_API_KEY");
 
@@ -23,8 +23,11 @@ public class Main {
             ExchangeRateCli.showMenu();
             option = ExchangeRateCli.getUserMenuInput();
 
+            ExchangeRateLogger.logUserOptionInput("" + option);
+
             if (option < 7) {
                 value = ExchangeRateCli.getUserValueInput();
+                ExchangeRateLogger.logUserValueInput("" + value);
             }
 
             switch(option) {
@@ -54,8 +57,13 @@ public class Main {
                     break;
                 case 7:
                     baseCurrency = ExchangeRateCli.getUserBaseCurrencyInput();
+                    ExchangeRateLogger.logUserCurrencyInput(baseCurrency.name());
+
                     targetCurrency = ExchangeRateCli.getUserTargetCurrencyInput();
+                    ExchangeRateLogger.logUserCurrencyInput(targetCurrency.name());
+
                     value = ExchangeRateCli.getUserValueInput();
+                    ExchangeRateLogger.logUserValueInput("" + value);
                     break;
                 default:
                     continue;
@@ -63,6 +71,7 @@ public class Main {
 
             System.out.println("\nConvertendo...");
             result = exchangeRateService.convertValue(baseCurrency, targetCurrency, value);
+            ExchangeRateLogger.logSuccessfulConversion(result);
             ExchangeRateCli.showConversionResult(value, result);
         }
     }
