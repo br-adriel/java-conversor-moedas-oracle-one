@@ -44,3 +44,6 @@ build/
 
 ### LOG FILES ###
 *.log
+
+### HISTORY FILE ###
+history.csv
